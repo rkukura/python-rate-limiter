@@ -1,11 +1,12 @@
 # python-redis-rate-limiter
 Python client for distributed rate limiting using Redis.
 
-USAGE
+## Usage
 
 The redis_rate_limiter.py module provides a simple rate limiting API
 for distributd Python applications to use:
 
+```
 class RedisRateLimiter(object):
     def __init__(self, host='localhost', port=6379, db=0,
                  username=None, password=None):
@@ -14,6 +15,7 @@ class RedisRateLimiter(object):
     def allow_call(self, id, period, tokens_per_period,
                    tokens_required=1.0):
         # …
+```
 
 An application instantiates the RedisRateLimiter class passing the
 parameter values required to connect to the Redis server. See the
@@ -59,7 +61,7 @@ these values can vary dynamically without causing significant problems
 as long as there is minimal lag in replicas becoming consistent again.
 
 
-TESTS
+## Tests
 
 No unit tests currently exist.
 
@@ -68,12 +70,16 @@ implementation. It requires a running Redis server.
 
 To see the command line options, run:
 
+```
 python test_cleint.py -h
+```
 
 Assuming a Redis server is running locally with the default (unsecure)
 configuration, an example test can be run with:
 
+```
 python test_client.py myresource:someclient 1000000 10 1 500 10000
+```
 
 This makes 500 calls to allow_call() with a delay of 10000
 microseconds between calls, using a rate limit of 10 calls per 1000000
@@ -86,7 +92,7 @@ sorted on the timestamp field to see exactly which calls were allowed
 and which were rejected, and at what times.
 
 
-NOTES
+## Notes
 
 This is just a proof-of-concept implementation, is not supported in
 any way, and should not be used for any sort of production use case.
