@@ -15,7 +15,7 @@ def run_test(id, period, tokens_per_period, tokens_required, calls, delay, log=N
     pid = str(os.getpid())
 
     for x in range(calls):
-        result, when = rl.limit_rate(id, period, tokens_per_period, tokens_required)
+        result, when = rl.allow_call(id, period, tokens_per_period, tokens_required)
         if result:
             calls_allowed = calls_allowed + 1
         else:

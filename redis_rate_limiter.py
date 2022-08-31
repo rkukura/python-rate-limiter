@@ -5,7 +5,7 @@ class RedisRateLimiter(object):
         self._redis = redis.Redis(host, port, db, username, password)
         self._expire_periods = 5
 
-    def limit_rate(self, id, period, tokens_per_period, tokens_required=1.0):
+    def allow_call(self, id, period, tokens_per_period, tokens_required=1.0):
         """Return a tuple indicating whether a call requiring
         ``tokens_required`` tokens on resource ``id`` is allowed and
         the time at which this was determined. The rate limit for the
@@ -35,7 +35,10 @@ class RedisRateLimiter(object):
                     # Get the current time from the Redis server. This
                     # costs a round trip but avoids requiring clock
                     # synchronization among nodes using the same rate
-                    # limit id.
+                    # limit id. REVISIT: Can we avoid the extra round
+                    # trip by getting the pipeline to batch this
+                    # command with the previous hmget without
+                    # resetting the watch?
                     seconds, microseconds = pipe.time()
                     when = seconds * 1000000 + microseconds
 
@@ -65,5 +68,6 @@ class RedisRateLimiter(object):
 
                 except redis.WatchError:
                     # Someone else updated our Redis key or it expired
-                    # during the transaction, so try again.
+                    # during the transaction, so try again. REVISIT:
+                    # Should we sleep a bit to prevent livelock?
                     continue
